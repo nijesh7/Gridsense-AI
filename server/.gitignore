@@ -1,0 +1,22 @@
+# Node dependencies
+node_modules/
+**/node_modules/
+**/node_modules
+
+# Environment secrets
+.env
+.env.*
+!.env.example
+firebase-adminsdk*.json
+serviceAccountKey.json
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Editor
+.vscode/
+.DS_Store
+Thumbs.db
