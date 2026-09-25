@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { EnergyProvider } from './context/EnergyContext';
@@ -23,6 +23,9 @@ import LoginPage from './pages/LoginPage';
 import UserHomePortal from './pages/UserHomePortal';
 
 function AppLayout() {
+  const location = useLocation();
+  const isLoginPage = location.pathname === '/login';
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-dark-900 text-slate-800 dark:text-slate-100 flex flex-col font-sans transition-colors duration-200">
       {/* Top Navigation */}
@@ -30,9 +33,9 @@ function AppLayout() {
 
       {/* Layout Body with Sidebar + Main Content */}
       <div className="flex-1 flex overflow-hidden">
-        <Sidebar />
+        {!isLoginPage && <Sidebar />}
 
-        <main className="flex-1 p-4 lg:p-8 overflow-y-auto max-w-7xl mx-auto w-full">
+        <main className={`flex-1 p-4 lg:p-8 overflow-y-auto ${isLoginPage ? 'w-full' : 'max-w-7xl mx-auto w-full'}`}>
           <Routes>
             <Route path="/" element={<DashboardPage />} />
             <Route path="/my-home" element={<UserHomePortal />} />
@@ -56,7 +59,7 @@ function AppLayout() {
       <DemoModal />
 
       {/* Smart AI Energy Copilot Assistant */}
-      <AICopilotWidget />
+      {!isLoginPage && <AICopilotWidget />}
     </div>
   );
 }
