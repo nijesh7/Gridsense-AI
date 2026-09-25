@@ -1,0 +1,76 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions for Role-Based Access Control (RBAC)
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function getUserRole() {
+      return request.auth.token.role;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (getUserRole() == 'ADMIN' || request.auth.token.email.matches('.*admin.*'));
+    }
+
+    function isDiscomOperator() {
+      return isAuthenticated() && (getUserRole() == 'DISCOM_OPERATOR' || isAdmin());
+    }
+
+    function isCommunityManager() {
+      return isAuthenticated() && (getUserRole() == 'COMMUNITY_MANAGER' || isAdmin());
+    }
+
+    // 1. Users collection
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() || (isAuthenticated() && request.auth.uid == userId);
+    }
+
+    // 2. Neighbourhoods
+    match /neighbourhoods/{neighbourhoodId} {
+      allow read: if true; // Public view for dashboards
+      allow write: if isCommunityManager() || isDiscomOperator();
+    }
+
+    // 3. Energy Telemetry & Forecasts
+    match /energyData/{docId} {
+      allow read: if true;
+      allow write: if isCommunityManager() || isAdmin();
+    }
+
+    match /forecasts/{docId} {
+      allow read: if true;
+      allow write: if isAdmin() || isCommunityManager();
+    }
+
+    // 4. Battery & Flexible Loads
+    match /batteryStatus/{docId} {
+      allow read: if true;
+      allow write: if isCommunityManager() || isDiscomOperator();
+    }
+
+    match /flexibleLoads/{loadId} {
+      allow read: if true;
+      allow write: if isCommunityManager() || isAdmin();
+    }
+
+    // 5. Alerts & Recommendations
+    match /alerts/{alertId} {
+      allow read: if true;
+      allow write: if isDiscomOperator() || isCommunityManager();
+    }
+
+    match /recommendations/{recId} {
+      allow read: if true;
+      allow write: if isCommunityManager() || isDiscomOperator();
+    }
+
+    // 6. Simulation Runs
+    match /simulationRuns/{runId} {
+      allow read, write: if true;
+    }
+  }
+}

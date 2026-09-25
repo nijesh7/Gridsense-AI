@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-800 font-sans transition-colors duration-200;
+  }
+
+  html.dark body {
+    @apply bg-dark-900 text-slate-100;
+    background-image: 
+      radial-gradient(at 15% 15%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
+      radial-gradient(at 85% 15%, rgba(6, 182, 212, 0.08) 0px, transparent 50%),
+      radial-gradient(at 50% 85%, rgba(99, 102, 241, 0.05) 0px, transparent 50%);
+    background-attachment: fixed;
+  }
+
+  html:not(.dark) body {
+    background-image: 
+      radial-gradient(at 15% 15%, rgba(16, 185, 129, 0.04) 0px, transparent 50%),
+      radial-gradient(at 85% 15%, rgba(6, 182, 212, 0.04) 0px, transparent 50%);
+    background-attachment: fixed;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading tracking-tight;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white border border-slate-200 rounded-2xl shadow-sm transition-all duration-300 dark:bg-dark-800/80 dark:border-white/10 dark:shadow-xl dark:backdrop-blur-xl;
+  }
+
+  .glass-card-hover {
+    @apply glass-card hover:border-slate-300 hover:shadow-md hover:-translate-y-0.5 dark:hover:border-white/20 dark:hover:bg-dark-700/80 dark:hover:shadow-2xl;
+  }
+
+  .badge-glow-emerald {
+    @apply bg-grid-emerald/15 text-emerald-700 dark:text-grid-emerald border border-grid-emerald/30 shadow-glow-emerald;
+  }
+
+  .badge-glow-amber {
+    @apply bg-solar-500/15 text-amber-700 dark:text-solar-400 border border-solar-500/30 shadow-glow-amber;
+  }
+
+  .badge-glow-rose {
+    @apply bg-grid-rose/15 text-rose-700 dark:text-grid-rose border border-grid-rose/30 shadow-glow-rose;
+  }
+
+  .badge-glow-cyan {
+    @apply bg-grid-cyan/15 text-cyan-700 dark:text-grid-cyan border border-grid-cyan/30 shadow-glow-cyan;
+  }
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+html.dark ::-webkit-scrollbar-thumb {
+  background: #1e293b;
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
