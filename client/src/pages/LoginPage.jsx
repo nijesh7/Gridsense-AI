@@ -7,7 +7,7 @@ import {
   Lock, 
   Mail, 
   ArrowRight, 
-  UserCheck, 
+  User, 
   Sparkles, 
   Building2, 
   Radio, 
@@ -17,9 +17,10 @@ import {
 } from 'lucide-react';
 
 export default function LoginPage() {
-  const { loginWithRole, switchRole } = useAuth();
+  const { loginWithRole, customName, setCustomName } = useAuth();
   const navigate = useNavigate();
 
+  const [enteredName, setEnteredName] = useState(customName || '');
   const [activeTab, setActiveTab] = useState('roles'); // 'roles' | 'credentials'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -30,39 +31,42 @@ export default function LoginPage() {
     {
       role: "USER",
       title: "Prosumer Citizen",
-      subtitle: "Vikram Mehta (Home #42)",
+      subtitle: "Smart Homeowner (#42)",
+      defaultName: "Vikram Mehta",
       desc: "Monitor your rooftop solar, schedule smart EV charging, earn ₹180 delay rebates, and view 100% protected essential appliances.",
       badge: "Citizen Home Portal",
       destination: "/my-home",
       icon: Home,
       color: "text-indigo-600 dark:text-indigo-400",
-      accentBg: "bg-indigo-50 dark:bg-indigo-500/10",
+      accentBg: "bg-indigo-50/80 dark:bg-indigo-500/10",
       border: "border-indigo-200 hover:border-indigo-500 dark:border-indigo-500/30 dark:hover:border-indigo-500/80",
       btnClass: "bg-indigo-600 hover:bg-indigo-700 text-white"
     },
     {
       role: "DISCOM_OPERATOR",
       title: "DISCOM Feeder Operator",
-      subtitle: "R. Sharma (Feeder Officer)",
+      subtitle: "Grid Control Officer",
+      defaultName: "R. Sharma",
       desc: "Substation feeder telemetry (FDR-001 to FDR-004), grid map, overload alarms, and 1-click automated Demand Response dispatch.",
       badge: "Substation Control",
       destination: "/discom",
       icon: Radio,
       color: "text-cyan-600 dark:text-grid-cyan",
-      accentBg: "bg-cyan-50 dark:bg-grid-cyan/10",
+      accentBg: "bg-cyan-50/80 dark:bg-grid-cyan/10",
       border: "border-cyan-200 hover:border-cyan-500 dark:border-grid-cyan/30 dark:hover:border-grid-cyan/80",
       btnClass: "bg-cyan-600 hover:bg-cyan-700 text-white"
     },
     {
       role: "COMMUNITY_MANAGER",
       title: "Community Energy Lead",
-      subtitle: "Ananya Patel (Green Valley)",
+      subtitle: "Green Valley Microgrid",
+      defaultName: "Ananya Patel",
       desc: "Coordinate 100-home aggregate microgrid, manage the 100 kWh community battery floor reserve, and run What-If stress tests.",
       badge: "Microgrid Management",
       destination: "/",
       icon: Building2,
       color: "text-amber-600 dark:text-solar-400",
-      accentBg: "bg-amber-50 dark:bg-solar-500/10",
+      accentBg: "bg-amber-50/80 dark:bg-solar-500/10",
       border: "border-amber-200 hover:border-amber-500 dark:border-solar-500/30 dark:hover:border-solar-500/80",
       btnClass: "bg-amber-600 hover:bg-amber-700 text-white"
     },
@@ -70,12 +74,13 @@ export default function LoginPage() {
       role: "ADMIN",
       title: "System Administrator",
       subtitle: "Full Platform Controller",
+      defaultName: "System Administrator",
       desc: "Complete administrative access to all 12 platform tabs, GBDT machine learning multi-horizon model weights, and live data telemetry.",
       badge: "Full System Controller",
       destination: "/",
       icon: ShieldCheck,
       color: "text-emerald-600 dark:text-grid-emerald",
-      accentBg: "bg-emerald-50 dark:bg-grid-emerald/10",
+      accentBg: "bg-emerald-50/80 dark:bg-grid-emerald/10",
       border: "border-emerald-200 hover:border-emerald-500 dark:border-grid-emerald/30 dark:hover:border-grid-emerald/80",
       btnClass: "bg-emerald-600 hover:bg-emerald-700 text-white"
     }
@@ -85,7 +90,8 @@ export default function LoginPage() {
   const handleRoleLogin = (roleItem) => {
     setLoadingRole(roleItem.role);
     try {
-      const destination = loginWithRole(roleItem.role);
+      const finalName = enteredName.trim() || roleItem.defaultName;
+      const destination = loginWithRole(roleItem.role, finalName);
       navigate(destination || roleItem.destination);
     } catch (err) {
       setError("Failed to sign in as " + roleItem.title);
@@ -107,14 +113,15 @@ export default function LoginPage() {
       targetRole = "COMMUNITY_MANAGER";
     }
 
-    const destination = loginWithRole(targetRole);
+    const finalName = enteredName.trim() || (email.split('@')[0]);
+    const destination = loginWithRole(targetRole, finalName);
     navigate(destination);
   };
 
   return (
-    <div className="min-h-[82vh] flex flex-col items-center justify-center p-4 max-w-5xl mx-auto">
+    <div className="min-h-[85vh] flex flex-col items-center justify-center p-4 max-w-5xl mx-auto">
       {/* Brand Header */}
-      <div className="text-center space-y-3 mb-8">
+      <div className="text-center space-y-3 mb-6">
         <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-grid-emerald to-grid-cyan p-0.5 shadow-glow-emerald">
           <div className="w-full h-full bg-white dark:bg-dark-900 rounded-[14px] flex items-center justify-center text-grid-emerald">
             <Zap className="w-7 h-7 fill-current" />
@@ -129,30 +136,58 @@ export default function LoginPage() {
             Neighbourhood-Level Smart Energy Coordination Platform
           </p>
         </div>
+      </div>
 
-        {/* View Selection Tabs */}
-        <div className="inline-flex rounded-xl p-1 bg-slate-200/80 dark:bg-dark-800 border border-slate-300 dark:border-white/10 text-xs font-semibold shadow-inner mt-2">
-          <button
-            onClick={() => setActiveTab('roles')}
-            className={`px-4 py-1.5 rounded-lg transition-all cursor-pointer ${
-              activeTab === 'roles'
-                ? 'bg-white text-slate-900 dark:bg-white/20 dark:text-white shadow font-bold'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-            }`}
-          >
-            ⚡ 1-Click Role Login (Instant Access)
-          </button>
-          <button
-            onClick={() => setActiveTab('credentials')}
-            className={`px-4 py-1.5 rounded-lg transition-all cursor-pointer ${
-              activeTab === 'credentials'
-                ? 'bg-white text-slate-900 dark:bg-white/20 dark:text-white shadow font-bold'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-            }`}
-          >
-            🔑 Email & Password
-          </button>
+      {/* Prominent Name Input Box */}
+      <div className="w-full max-w-md mx-auto mb-6 p-4 rounded-2xl bg-white dark:bg-dark-800 border border-slate-200 dark:border-white/10 shadow-md">
+        <label className="text-xs font-bold text-slate-800 dark:text-slate-200 block mb-1.5 flex items-center justify-between">
+          <span className="flex items-center gap-1.5">
+            <User className="w-4 h-4 text-emerald-600 dark:text-grid-emerald" />
+            <span>Enter Your Name:</span>
+          </span>
+          <span className="text-[10px] text-emerald-600 dark:text-grid-emerald font-semibold">
+            ✨ Will be displayed on your Home Dashboard
+          </span>
+        </label>
+        <div className="relative">
+          <input
+            type="text"
+            value={enteredName}
+            onChange={(e) => setEnteredName(e.target.value)}
+            placeholder="Type your name (e.g. Ramakrishna, Vikram, Priya...)"
+            className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-dark-900 border border-slate-300 dark:border-white/10 text-slate-900 dark:text-white text-xs font-medium outline-none focus:border-grid-emerald focus:ring-1 focus:ring-grid-emerald transition-colors"
+          />
         </div>
+        {enteredName.trim() && (
+          <p className="text-[11px] text-emerald-600 dark:text-grid-emerald font-medium mt-1.5 flex items-center gap-1">
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            Portal will greet you as: <strong>{enteredName.trim()}</strong>
+          </p>
+        )}
+      </div>
+
+      {/* View Selection Tabs */}
+      <div className="inline-flex rounded-xl p-1 bg-slate-200/80 dark:bg-dark-800 border border-slate-300 dark:border-white/10 text-xs font-semibold shadow-inner mb-6">
+        <button
+          onClick={() => setActiveTab('roles')}
+          className={`px-4 py-1.5 rounded-lg transition-all cursor-pointer ${
+            activeTab === 'roles'
+              ? 'bg-white text-slate-900 dark:bg-white/20 dark:text-white shadow font-bold'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+          }`}
+        >
+          ⚡ 1-Click Role Login (Instant Access)
+        </button>
+        <button
+          onClick={() => setActiveTab('credentials')}
+          className={`px-4 py-1.5 rounded-lg transition-all cursor-pointer ${
+            activeTab === 'credentials'
+              ? 'bg-white text-slate-900 dark:bg-white/20 dark:text-white shadow font-bold'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+          }`}
+        >
+          🔑 Email & Password
+        </button>
       </div>
 
       {error && (
@@ -164,9 +199,9 @@ export default function LoginPage() {
       {/* TAB 1: 1-Click Role Cards */}
       {activeTab === 'roles' && (
         <div className="w-full space-y-4 animate-in fade-in">
-          <div className="text-center mb-2">
+          <div className="text-center mb-1">
             <span className="text-xs uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">
-              Click any role below to immediately sign in and launch that role's custom portal
+              Click any role below to sign in with your name and open your custom dashboard
             </span>
           </div>
 
@@ -174,6 +209,7 @@ export default function LoginPage() {
             {rolesList.map((item) => {
               const Icon = item.icon;
               const isLoading = loadingRole === item.role;
+              const displayName = enteredName.trim() || item.defaultName;
 
               return (
                 <div
@@ -194,8 +230,8 @@ export default function LoginPage() {
                           <h2 className="font-heading font-extrabold text-base text-slate-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-grid-emerald transition-colors">
                             {item.title}
                           </h2>
-                          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                            {item.subtitle}
+                          <p className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                            {displayName}
                           </p>
                         </div>
                       </div>
@@ -224,7 +260,7 @@ export default function LoginPage() {
                         <span>Logging in...</span>
                       ) : (
                         <>
-                          <span>Login as {item.title.split(' ')[0]}</span>
+                          <span>Login as {displayName.split(' ')[0]}</span>
                           <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                         </>
                       )}
@@ -292,7 +328,7 @@ export default function LoginPage() {
               className="w-full py-2.5 rounded-xl bg-gradient-to-r from-grid-emerald to-grid-cyan hover:opacity-95 text-dark-900 font-heading font-extrabold text-xs shadow-glow-emerald transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <LogIn className="w-4 h-4" />
-              <span>Sign In to Portal</span>
+              <span>Sign In as {enteredName.trim() || 'User'}</span>
             </button>
           </form>
 

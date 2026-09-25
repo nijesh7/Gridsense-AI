@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useEnergy } from '../context/EnergyContext';
+import { useAuth } from '../context/AuthContext';
 import MetricCard from '../components/MetricCard';
 import CriticalLoadIndicator from '../components/CriticalLoadIndicator';
 import EnergyFlowDiagram from '../components/EnergyFlowDiagram';
@@ -26,6 +27,7 @@ import {
 
 export default function DashboardPage() {
   const { dashboardData, loading } = useEnergy();
+  const { user } = useAuth();
   const [viewMode, setViewMode] = useState("simple"); // 'simple' (Customer) vs 'detailed' (Engineer)
   const [quickScenario, setQuickScenario] = useState("default");
 
@@ -64,7 +66,7 @@ export default function DashboardPage() {
             </span>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Predictive AI balancing for Feeder FDR-001 • Proactive reliability & renewable optimization
+            Welcome, <strong className="text-emerald-700 dark:text-grid-emerald">{user?.name}</strong> • Predictive AI balancing for Feeder FDR-001
           </p>
         </div>
 

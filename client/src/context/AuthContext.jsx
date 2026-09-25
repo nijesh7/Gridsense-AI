@@ -50,21 +50,44 @@ export function AuthProvider({ children }) {
     return localStorage.getItem("gridsense_logged_in") !== "false";
   });
 
-  const [user, setUser] = useState(DEMO_USERS[currentRole] || DEMO_USERS.ADMIN);
+  const [customName, setCustomName] = useState(() => {
+    return localStorage.getItem("gridsense_user_name") || "";
+  });
+
+  const baseUser = DEMO_USERS[currentRole] || DEMO_USERS.ADMIN;
+  const user = {
+    ...baseUser,
+    name: customName.trim() || baseUser.name
+  };
 
   useEffect(() => {
-    const updated = DEMO_USERS[currentRole] || DEMO_USERS.ADMIN;
-    setUser(updated);
     localStorage.setItem("gridsense_user_role", currentRole);
   }, [currentRole]);
 
-  const loginWithRole = (role) => {
+  useEffect(() => {
+    if (customName) {
+      localStorage.setItem("gridsense_user_name", customName);
+    }
+  }, [customName]);
+
+  const loginWithRole = (role, enteredName = "") => {
     const validRole = DEMO_USERS[role] ? role : "ADMIN";
     setCurrentRole(validRole);
     setIsLoggedIn(true);
+
+    if (enteredName && enteredName.trim()) {
+      setCustomName(enteredName.trim());
+      localStorage.setItem("gridsense_user_name", enteredName.trim());
+    }
+
     localStorage.setItem("gridsense_user_role", validRole);
     localStorage.setItem("gridsense_logged_in", "true");
     return DEMO_USERS[validRole].destination;
+  };
+
+  const updateUserName = (name) => {
+    setCustomName(name);
+    localStorage.setItem("gridsense_user_name", name);
   };
 
   const logout = () => {
@@ -85,6 +108,9 @@ export function AuthProvider({ children }) {
       user, 
       currentRole, 
       isLoggedIn, 
+      customName,
+      setCustomName,
+      updateUserName,
       loginWithRole, 
       logout, 
       switchRole, 

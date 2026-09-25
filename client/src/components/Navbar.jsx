@@ -99,14 +99,17 @@ export default function Navbar() {
         {/* Role Switcher */}
         <RoleSwitcher />
 
-        {/* Login Page Link */}
+        {/* User Profile Pill & Login Link */}
         <Link
           to="/login"
-          title="Sign in or Switch User"
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all cursor-pointer"
+          title={`Signed in as ${user?.name}. Click to switch user or customize name.`}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-200 text-xs font-semibold transition-all cursor-pointer"
         >
-          <LogIn className="w-3.5 h-3.5 text-grid-emerald" />
-          <span className="hidden md:inline">Sign In</span>
+          <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-grid-emerald flex items-center justify-center font-bold text-[10px]">
+            {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+          </div>
+          <span className="max-w-[120px] truncate hidden md:inline">{user?.name}</span>
+          <span className="text-[10px] text-slate-400 font-mono hidden lg:inline">Switch</span>
         </Link>
       </div>
     </header>
