@@ -1,4 +1,6 @@
 {
+  "git.autorefresh": true,
+  "git.ignoreLimitWarning": true,
   "files.exclude": {
     "**/node_modules": true,
     "**/dist": true,
@@ -16,6 +18,5 @@
     "**/dist": true,
     "**/__pycache__": true,
     "**/.venv": true
-  },
-  "git.ignoreLimitWarning": true
+  }
 }
