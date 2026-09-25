@@ -78,11 +78,11 @@ export default function UserHomePortal() {
                   Welcome, {user?.name || "Vikram Mehta"}
                 </h1>
                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-grid-emerald/15 text-emerald-700 dark:text-grid-emerald border border-grid-emerald/30">
-                  Home #42 Prosumer
+                  {user?.houseNumber || "Home #42"} Prosumer
                 </span>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                Green Valley Eco-Subdivision • Feeder FDR-001 • Solar Rooftop 5.0 kWp
+                {user?.subdivision || "Green Valley Eco-Subdivision"} • {user?.feederId || "Feeder FDR-001"} • Solar Rooftop {user?.solarCapacity || "5.0 kWp"}
               </p>
             </div>
           </div>
