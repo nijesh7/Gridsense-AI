@@ -70,13 +70,13 @@ export default function DashboardPage() {
 
         {/* View Mode Toggle (Customer Simple vs Engineer Detailed) */}
         <div className="flex items-center gap-3">
-          <div className="flex rounded-xl bg-dark-800 p-1 border border-white/10 text-xs">
+          <div className="flex rounded-xl bg-slate-200/80 dark:bg-dark-800 p-1 border border-slate-300/80 dark:border-white/10 text-xs shadow-inner">
             <button
               onClick={() => setViewMode("simple")}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
                 viewMode === "simple"
                   ? "bg-gradient-to-r from-grid-emerald to-grid-cyan text-dark-900 font-extrabold shadow-glow-emerald"
-                  : "text-slate-400 hover:text-white"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               <HeartHandshake className="w-3.5 h-3.5" />
@@ -87,7 +87,7 @@ export default function DashboardPage() {
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
                 viewMode === "detailed"
                   ? "bg-gradient-to-r from-grid-emerald to-grid-cyan text-dark-900 font-extrabold shadow-glow-emerald"
-                  : "text-slate-400 hover:text-white"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               <Activity className="w-3.5 h-3.5" />
@@ -97,7 +97,7 @@ export default function DashboardPage() {
 
           <Link
             to="/simulator"
-            className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-solar-500/15 text-solar-400 border border-solar-500/30 hover:bg-solar-500/25 text-xs font-semibold transition-colors"
+            className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-solar-500/15 text-amber-700 dark:text-solar-400 border border-solar-500/30 hover:bg-solar-500/25 text-xs font-semibold transition-colors"
           >
             <Sliders className="w-3.5 h-3.5" />
             What-If Simulator ⭐
@@ -106,9 +106,9 @@ export default function DashboardPage() {
       </div>
 
       {/* Quick Scenario Preset Selector */}
-      <div className="p-3 rounded-xl bg-dark-800/80 border border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs">
-        <span className="text-slate-400 font-mono text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5">
-          <Sparkles className="w-3.5 h-3.5 text-solar-400" />
+      <div className="p-3.5 rounded-xl bg-white dark:bg-dark-800/80 border border-slate-200 dark:border-white/10 shadow-sm flex flex-wrap items-center justify-between gap-3 text-xs">
+        <span className="text-slate-600 dark:text-slate-400 font-mono text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5">
+          <Sparkles className="w-3.5 h-3.5 text-solar-500" />
           Test Real-World Scenarios:
         </span>
         <div className="flex flex-wrap items-center gap-2">
@@ -123,8 +123,8 @@ export default function DashboardPage() {
               onClick={() => setQuickScenario(sc.id)}
               className={`px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
                 quickScenario === sc.id
-                  ? 'bg-white/20 text-white border border-white/30 shadow'
-                  : 'bg-dark-900/60 text-slate-400 border border-white/5 hover:bg-white/5 hover:text-slate-200'
+                  ? 'bg-slate-900 text-white dark:bg-white/20 dark:text-white border border-slate-700 dark:border-white/30 shadow'
+                  : 'bg-slate-100 hover:bg-slate-200 dark:bg-dark-900/60 text-slate-700 dark:text-slate-400 border border-slate-200 dark:border-white/5 dark:hover:bg-white/5 dark:hover:text-slate-200'
               }`}
             >
               {sc.label}

@@ -58,19 +58,34 @@ export default function Navbar() {
 
       {/* Actions: Theme Toggle, Start Demo, Login & Role Switcher */}
       <div className="flex items-center gap-2.5">
-        {/* Light / Dark Mode Toggle */}
-        <button
-          onClick={toggleTheme}
-          title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-          aria-label="Toggle Theme"
-          className="p-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 transition-all cursor-pointer flex items-center justify-center"
-        >
-          {isDark ? (
-            <Sun className="w-4 h-4 text-solar-400 fill-solar-400/20" />
-          ) : (
-            <Moon className="w-4 h-4 text-indigo-600 fill-indigo-600/20" />
-          )}
-        </button>
+        {/* Full Dark Mode vs Pure White Mode Segmented Toggle */}
+        <div className="flex items-center p-1 rounded-xl bg-slate-200/80 dark:bg-dark-800 border border-slate-300/80 dark:border-white/10 text-xs font-semibold shadow-inner">
+          <button
+            onClick={() => isDark && toggleTheme()}
+            title="Switch to Pure White Mode"
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+              !isDark
+                ? 'bg-white text-slate-900 shadow-sm font-bold border border-slate-200'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Sun className={`w-3.5 h-3.5 ${!isDark ? 'text-amber-500 fill-amber-500' : 'text-slate-400'}`} />
+            <span className="text-[11px]">Light</span>
+          </button>
+
+          <button
+            onClick={() => !isDark && toggleTheme()}
+            title="Switch to Full Dark Mode"
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+              isDark
+                ? 'bg-dark-700 text-white shadow-sm font-bold border border-white/15'
+                : 'text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <Moon className={`w-3.5 h-3.5 ${isDark ? 'text-cyan-400 fill-cyan-400' : 'text-slate-400'}`} />
+            <span className="text-[11px]">Dark</span>
+          </button>
+        </div>
 
         {/* Demo Button */}
         <button

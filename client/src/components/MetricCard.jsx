@@ -41,7 +41,7 @@ export default function MetricCard({
       <div className={`absolute top-0 left-0 right-0 h-1 ${getBarColor()}`} />
 
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{title}</span>
+        <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{title}</span>
         {badge && (
           <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${getBadgeStyle()}`}>
             {badge}
@@ -50,17 +50,17 @@ export default function MetricCard({
       </div>
 
       <div className="flex items-baseline gap-2 mb-1">
-        <span className="font-heading font-extrabold text-3xl text-white tracking-tight">
+        <span className="font-heading font-extrabold text-3xl text-slate-900 dark:text-white tracking-tight">
           {value}
         </span>
-        {unit && <span className="text-sm font-semibold text-slate-400">{unit}</span>}
+        {unit && <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">{unit}</span>}
       </div>
 
-      {subtitle && <p className="text-xs text-slate-400 mb-3">{subtitle}</p>}
+      {subtitle && <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">{subtitle}</p>}
 
       {/* Mini Progress */}
       {progress !== undefined && (
-        <div className="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+        <div className="w-full h-1.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
           <div
             className={`h-full rounded-full transition-all duration-500 ${getBarColor()}`}
             style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
