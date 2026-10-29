@@ -4,14 +4,14 @@
  */
 
 import { initializeApp, getApps } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, signInAnonymously } from "firebase/auth";
 import { 
   getFirestore, 
   collection, 
   doc, 
   setDoc, 
   addDoc, 
-  getDocs,
+  getDocs, 
   onSnapshot, 
   query, 
   orderBy, 
@@ -33,6 +33,32 @@ let app;
 let auth;
 let db;
 
+// Track whether guidance has been displayed to avoid duplicate console spam
+let permissionNoticeLogged = false;
+
+function handleFirestorePermissionError(context) {
+  if (permissionNoticeLogged) return;
+  permissionNoticeLogged = true;
+
+  console.info(
+    "%c⚡ [Firebase Firestore Notice]%c\n" +
+    "Cloud Firestore on project 'gridsense-4b9d8' has strict/locked security rules (Missing or insufficient permissions).\n\n" +
+    "To enable live Firestore synchronization & database auto-seeding:\n" +
+    "1. Open your Firebase Console: https://console.firebase.google.com/project/gridsense-4b9d8/firestore/rules\n" +
+    "2. Set the rules:\n" +
+    "   rules_version = '2';\n" +
+    "   service cloud.firestore {\n" +
+    "     match /databases/{database}/documents {\n" +
+    "       match /{document=**} { allow read, write: if true; }\n" +
+    "     }\n" +
+    "   }\n" +
+    "3. Click 'Publish'.\n\n" +
+    "✅ GridSense AI is currently using the local Express REST API & telemetry fallback without interruption.",
+    "color: #38bdf8; font-weight: bold;",
+    "color: #94a3b8;"
+  );
+}
+
 try {
   if (!getApps().length) {
     app = initializeApp(firebaseConfig);
@@ -41,6 +67,14 @@ try {
   }
   auth = getAuth(app);
   db = getFirestore(app);
+
+  // Attempt anonymous sign-in in case rules require request.auth != null
+  try {
+    signInAnonymously(auth).catch(() => {
+      // Anonymous authentication not enabled in Firebase Console - continue unauthenticated
+    });
+  } catch (_) {}
+
   console.log("⚡ [Firebase] Connected to project: gridsense-4b9d8 (Cloud Firestore active)");
 } catch (err) {
   console.warn("⚠️ [Firebase] Initialization notice:", err.message);
@@ -160,7 +194,11 @@ export async function seedFirestoreDatabase() {
       console.log("✅ [Firebase] Firestore collections seeded successfully: 'neighbourhoods', 'alerts'");
     }
   } catch (err) {
-    console.warn("⚠️ [Firebase] Auto-seed status:", err.message);
+    if (err.code === "permission-denied" || err.message?.includes("permissions")) {
+      handleFirestorePermissionError("Auto-seed");
+    } else {
+      console.warn("⚠️ [Firebase] Auto-seed status:", err.message);
+    }
   }
 }
 
@@ -175,13 +213,21 @@ export function subscribeToNeighbourhoodLive(neighbourhoodId = "area_a", callbac
 
   try {
     const docRef = doc(db, "neighbourhoods", neighbourhoodId);
-    return onSnapshot(docRef, (docSnap) => {
-      if (docSnap.exists()) {
-        callback(docSnap.data());
+    return onSnapshot(
+      docRef,
+      (docSnap) => {
+        if (docSnap.exists()) {
+          callback(docSnap.data());
+        }
+      },
+      (err) => {
+        if (err.code === "permission-denied" || err.message?.includes("permissions")) {
+          handleFirestorePermissionError("neighbourhood onSnapshot");
+        } else {
+          console.warn("[Firestore] onSnapshot notice:", err.message);
+        }
       }
-    }, (err) => {
-      console.warn("[Firestore] onSnapshot notice:", err.message);
-    });
+    );
   } catch (e) {
     return () => {};
   }
@@ -195,13 +241,21 @@ export function subscribeToAlertsLive(callback) {
 
   try {
     const q = query(collection(db, "alerts"), orderBy("timestamp", "desc"), limit(10));
-    return onSnapshot(q, (snapshot) => {
-      const items = [];
-      snapshot.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
-      callback(items);
-    }, (err) => {
-      console.warn("[Firestore] Alerts onSnapshot notice:", err.message);
-    });
+    return onSnapshot(
+      q,
+      (snapshot) => {
+        const items = [];
+        snapshot.forEach((doc) => items.push({ id: doc.id, ...doc.data() }));
+        callback(items);
+      },
+      (err) => {
+        if (err.code === "permission-denied" || err.message?.includes("permissions")) {
+          handleFirestorePermissionError("alerts onSnapshot");
+        } else {
+          console.warn("[Firestore] Alerts onSnapshot notice:", err.message);
+        }
+      }
+    );
   } catch (e) {
     return () => {};
   }
@@ -219,7 +273,11 @@ export async function logSimulationRun(scenarioData) {
     });
     console.log("✅ [Firebase] Simulation logged to Firestore collection 'simulationRuns'");
   } catch (err) {
-    console.warn("[Firestore] Failed to log simulation run:", err.message);
+    if (err.code === "permission-denied" || err.message?.includes("permissions")) {
+      handleFirestorePermissionError("logSimulationRun");
+    } else {
+      console.warn("[Firestore] Failed to log simulation run:", err.message);
+    }
   }
 }
 
